@@ -14,3 +14,4 @@ A lightweight browser-based 3D voxel sandbox inspired by classic Minecraft-style
 - Inventory + hotbar with block selection (keys 1-9)
 - Basic roaming mobs you can fight
 - Runs entirely in the browser (no installation)
+- Installable as a PWA app (desktop/mobile) via browser install prompt
