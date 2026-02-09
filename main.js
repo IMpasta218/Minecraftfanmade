@@ -34,6 +34,27 @@ const modsButton = document.getElementById('btn-mods');
 const settingsButton = document.getElementById('btn-settings');
 let hasStartedGame = false;
 
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch((error) => {
+      console.warn('Service worker registration failed:', error);
+    });
+  });
+}
+
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  settingsButton.textContent = 'Settings / Install App';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  settingsButton.textContent = 'App Installed ✅';
+});
+
 function showOverlay() {
   overlay.style.display = 'grid';
 }
@@ -59,8 +80,17 @@ multiplayerButton.addEventListener('click', () => {
 modsButton.addEventListener('click', () => {
   modsButton.textContent = 'Mods & Modpacks (coming soon)';
 });
-settingsButton.addEventListener('click', () => {
-  settingsButton.textContent = 'Settings (coming soon)';
+settingsButton.addEventListener('click', async () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    settingsButton.textContent =
+      choice.outcome === 'accepted' ? 'Installing App...' : 'Settings / Install App';
+    deferredInstallPrompt = null;
+    return;
+  }
+
+  settingsButton.textContent = 'Settings: Press this to install app when available';
 });
 
 controls.addEventListener('lock', hideOverlay);
