@@ -39,6 +39,20 @@
                 <button class="menu-btn" id="btn-instance-add">Add Instance</button>
                 <button class="menu-btn" id="btn-instance-edit">Edit Instance</button>
               </div>
+
+              <div id="instance-browser" class="mod-browser" hidden>
+                <h3>New Instance: Mod Browser</h3>
+                <p class="small-note">Browse provider pages directly from launcher mode.</p>
+                <div class="launcher-actions">
+                  <button class="menu-btn provider-btn active" data-provider="modrinth">Modrinth</button>
+                  <button class="menu-btn provider-btn" data-provider="curseforge">CurseForge</button>
+                </div>
+                <div class="launcher-actions">
+                  <button class="menu-btn" id="btn-open-mods">Open Mods</button>
+                  <button class="menu-btn" id="btn-open-modpacks">Open Modpacks</button>
+                </div>
+                <p id="provider-status" class="small-note">Provider: Modrinth</p>
+              </div>
             </section>
 
             <section class="launcher-card">

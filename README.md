@@ -9,7 +9,7 @@ A lightweight browser-based 3D voxel sandbox inspired by classic Minecraft-style
 - 3D block world with terrain variation
 - First-person controls (WASD + jump)
 - Minecraft-style start menu on web
-- App mode now opens with a Prism-style launcher UI (instances + account manager + Play flow)
+- App mode now opens with a modern sleek launcher UI inspired by Prism/XMCL style (instances + account manager + built-in mod source shortcuts + Play flow)
 - Break blocks with left click
 - Place blocks with right click
 - Inventory + hotbar with block selection (keys 1-9)
@@ -17,6 +17,7 @@ A lightweight browser-based 3D voxel sandbox inspired by classic Minecraft-style
 - Runs entirely in the browser (no installation)
 - Installable as a PWA app (desktop/mobile) via browser install prompt
 - Account options in launcher: Microsoft sign-in placeholder + offline local account
+- New instance wizard includes Modrinth & CurseForge shortcuts for mods/modpacks browsing
 
 ## Run locally
 

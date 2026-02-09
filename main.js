@@ -43,7 +43,13 @@ const microsoftLoginButton = document.getElementById('btn-ms-login');
 const offlineLoginButton = document.getElementById('btn-offline-login');
 const offlineNameInput = document.getElementById('offline-name');
 const accountStatus = document.getElementById('account-status');
+const instanceBrowser = document.getElementById('instance-browser');
+const providerStatus = document.getElementById('provider-status');
+const providerButtons = document.querySelectorAll('.provider-btn');
+const openModsButton = document.getElementById('btn-open-mods');
+const openModpacksButton = document.getElementById('btn-open-modpacks');
 let hasStartedGame = false;
+let activeProvider = 'modrinth';
 
 function isAppDisplayMode() {
   const forceLauncher = new URLSearchParams(window.location.search).get('appLauncher') === '1';
@@ -99,6 +105,31 @@ function startSingleplayer() {
   }, 50);
 }
 
+
+const providerLinks = {
+  modrinth: {
+    mods: 'https://modrinth.com/mods',
+    modpacks: 'https://modrinth.com/modpacks',
+  },
+  curseforge: {
+    mods: 'https://www.curseforge.com/minecraft/search?page=1&pageSize=20&sortBy=relevancy&class=mc-mods',
+    modpacks: 'https://www.curseforge.com/minecraft/search?page=1&pageSize=20&sortBy=relevancy&class=modpacks',
+  },
+};
+
+function setProvider(provider) {
+  activeProvider = provider;
+  providerButtons.forEach((button) => {
+    button.classList.toggle('active', button.dataset.provider === provider);
+  });
+  providerStatus.textContent = `Provider: ${provider === 'modrinth' ? 'Modrinth' : 'CurseForge'}`;
+}
+
+function openProviderPage(kind) {
+  const url = providerLinks[activeProvider][kind];
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
 async function promptInstall(targetButton) {
   if (!deferredInstallPrompt) return false;
   deferredInstallPrompt.prompt();
@@ -130,7 +161,8 @@ launcherInstallButton.addEventListener('click', async () => {
 });
 
 instanceAddButton.addEventListener('click', () => {
-  instanceAddButton.textContent = 'Instance wizard (coming soon)';
+  instanceBrowser.hidden = !instanceBrowser.hidden;
+  instanceAddButton.textContent = instanceBrowser.hidden ? 'Add Instance' : 'Close Instance Wizard';
 });
 instanceEditButton.addEventListener('click', () => {
   instanceEditButton.textContent = 'Edit instance (coming soon)';
@@ -138,6 +170,18 @@ instanceEditButton.addEventListener('click', () => {
 microsoftLoginButton.addEventListener('click', () => {
   accountStatus.textContent = 'Microsoft login placeholder: OAuth setup required for production.';
 });
+providerButtons.forEach((button) => {
+  button.addEventListener('click', () => setProvider(button.dataset.provider));
+});
+
+openModsButton.addEventListener('click', () => {
+  openProviderPage('mods');
+});
+
+openModpacksButton.addEventListener('click', () => {
+  openProviderPage('modpacks');
+});
+
 offlineLoginButton.addEventListener('click', () => {
   const name = offlineNameInput.value.trim();
   if (!name) {
@@ -147,6 +191,8 @@ offlineLoginButton.addEventListener('click', () => {
 
   accountStatus.textContent = `Offline account selected: ${name}`;
 });
+
+setProvider('modrinth');
 
 controls.addEventListener('lock', hideOverlay);
 controls.addEventListener('unlock', () => {
