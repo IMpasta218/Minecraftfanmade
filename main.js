@@ -28,12 +28,36 @@ const controls = new PointerLockControls(camera, document.body);
 scene.add(controls.object);
 
 const overlay = document.getElementById('overlay');
+const menuCard = document.getElementById('menu-card');
+const launcherPanel = document.getElementById('launcher-panel');
 const singleplayerButton = document.getElementById('btn-singleplayer');
 const multiplayerButton = document.getElementById('btn-multiplayer');
 const modsButton = document.getElementById('btn-mods');
 const settingsButton = document.getElementById('btn-settings');
+const launcherPlayButton = document.getElementById('btn-launcher-play');
+const launcherSettingsButton = document.getElementById('btn-launcher-settings');
+const launcherInstallButton = document.getElementById('btn-launcher-install');
+const instanceAddButton = document.getElementById('btn-instance-add');
+const instanceEditButton = document.getElementById('btn-instance-edit');
+const microsoftLoginButton = document.getElementById('btn-ms-login');
+const offlineLoginButton = document.getElementById('btn-offline-login');
+const offlineNameInput = document.getElementById('offline-name');
+const accountStatus = document.getElementById('account-status');
 let hasStartedGame = false;
 
+function isAppDisplayMode() {
+  const forceLauncher = new URLSearchParams(window.location.search).get('appLauncher') === '1';
+  return forceLauncher || window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function applyStartLayout() {
+  const appMode = isAppDisplayMode();
+  launcherPanel.hidden = !appMode;
+  menuCard.hidden = appMode;
+}
+
+applyStartLayout();
+window.matchMedia('(display-mode: standalone)').addEventListener('change', applyStartLayout);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -48,11 +72,13 @@ window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
   deferredInstallPrompt = event;
   settingsButton.textContent = 'Settings / Install App';
+  launcherInstallButton.textContent = 'Install / Update App';
 });
 
 window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
   settingsButton.textContent = 'App Installed ✅';
+  launcherInstallButton.textContent = 'App Installed ✅';
 });
 
 function showOverlay() {
@@ -73,6 +99,15 @@ function startSingleplayer() {
   }, 50);
 }
 
+async function promptInstall(targetButton) {
+  if (!deferredInstallPrompt) return false;
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  targetButton.textContent = choice.outcome === 'accepted' ? 'Installing App...' : 'Install / Update App';
+  deferredInstallPrompt = null;
+  return true;
+}
+
 singleplayerButton.addEventListener('click', startSingleplayer);
 multiplayerButton.addEventListener('click', () => {
   multiplayerButton.textContent = 'Multiplayer (coming soon)';
@@ -81,16 +116,36 @@ modsButton.addEventListener('click', () => {
   modsButton.textContent = 'Mods & Modpacks (coming soon)';
 });
 settingsButton.addEventListener('click', async () => {
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const choice = await deferredInstallPrompt.userChoice;
-    settingsButton.textContent =
-      choice.outcome === 'accepted' ? 'Installing App...' : 'Settings / Install App';
-    deferredInstallPrompt = null;
+  const prompted = await promptInstall(settingsButton);
+  if (!prompted) settingsButton.textContent = 'Settings: Press this to install app when available';
+});
+
+launcherPlayButton.addEventListener('click', startSingleplayer);
+launcherSettingsButton.addEventListener('click', () => {
+  launcherSettingsButton.textContent = 'Launcher Settings (coming soon)';
+});
+launcherInstallButton.addEventListener('click', async () => {
+  const prompted = await promptInstall(launcherInstallButton);
+  if (!prompted) launcherInstallButton.textContent = 'App already installed or prompt unavailable';
+});
+
+instanceAddButton.addEventListener('click', () => {
+  instanceAddButton.textContent = 'Instance wizard (coming soon)';
+});
+instanceEditButton.addEventListener('click', () => {
+  instanceEditButton.textContent = 'Edit instance (coming soon)';
+});
+microsoftLoginButton.addEventListener('click', () => {
+  accountStatus.textContent = 'Microsoft login placeholder: OAuth setup required for production.';
+});
+offlineLoginButton.addEventListener('click', () => {
+  const name = offlineNameInput.value.trim();
+  if (!name) {
+    accountStatus.textContent = 'Enter an offline username first.';
     return;
   }
 
-  settingsButton.textContent = 'Settings: Press this to install app when available';
+  accountStatus.textContent = `Offline account selected: ${name}`;
 });
 
 controls.addEventListener('lock', hideOverlay);

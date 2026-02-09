@@ -11,6 +11,56 @@
   </head>
   <body>
     <div id="overlay">
+      <div id="launcher-panel" hidden>
+        <aside class="launcher-sidebar">
+          <h1>MineFan Launcher</h1>
+          <p class="subtitle">Fan-made JavaScript Edition</p>
+          <nav>
+            <button class="launcher-tab active">Play</button>
+            <button class="launcher-tab">Installations</button>
+            <button class="launcher-tab">Skins</button>
+            <button class="launcher-tab">Patch Notes</button>
+          </nav>
+          <p class="legal">Fan-made project. Not affiliated with Mojang or Minecraft.</p>
+        </aside>
+
+        <section class="launcher-main">
+          <div class="launcher-news">Latest: Prism-style app launcher with account manager and profiles.</div>
+
+          <div class="launcher-grid">
+            <section class="launcher-card">
+              <h2>Instances</h2>
+              <label for="profile-select">Selected Instance</label>
+              <select id="profile-select">
+                <option>MineFan Vanilla 1.0</option>
+                <option>MineFan Survival+ 1.0</option>
+              </select>
+              <div class="launcher-actions">
+                <button class="menu-btn" id="btn-instance-add">Add Instance</button>
+                <button class="menu-btn" id="btn-instance-edit">Edit Instance</button>
+              </div>
+            </section>
+
+            <section class="launcher-card">
+              <h2>Accounts</h2>
+              <p id="account-status">No account selected.</p>
+              <div class="launcher-actions">
+                <button class="menu-btn" id="btn-ms-login">Sign in with Microsoft</button>
+                <button class="menu-btn" id="btn-offline-login">Use Offline Account</button>
+              </div>
+              <input id="offline-name" maxlength="16" placeholder="Offline username" />
+              <p class="legal small-note">Cracked / Ely.by account support is unavailable in this fan project.</p>
+            </section>
+          </div>
+
+          <div class="launcher-actions footer-actions">
+            <button class="menu-btn" id="btn-launcher-settings">Launcher Settings</button>
+            <button class="menu-btn" id="btn-launcher-install">Install / Update App</button>
+          </div>
+          <button class="play-btn" id="btn-launcher-play">PLAY</button>
+        </section>
+      </div>
+
       <div id="menu-card">
         <h1>MineFan 3D</h1>
         <p class="subtitle">JavaScript Edition</p>
