@@ -128,6 +128,43 @@ inventory.wood = 20;
 inventory.sand = 20;
 renderHotbar();
 
+const mobGeometry = new THREE.BoxGeometry(0.85, 0.85, 0.85);
+const mobMaterial = new THREE.MeshLambertMaterial({ color: 0x7dd3fc });
+const mobs = [];
+const mobSpawnRadius = 18;
+
+function groundHeightAt(x, z) {
+  for (let y = 30; y >= -5; y -= 1) {
+    if (blocks.has(keyFor(Math.round(x), y, Math.round(z)))) {
+      return y + 0.5;
+    }
+  }
+  return 1;
+}
+
+function spawnMob() {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 8 + Math.random() * mobSpawnRadius;
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
+  const y = groundHeightAt(x, z);
+
+  const mesh = new THREE.Mesh(mobGeometry, mobMaterial.clone());
+  mesh.position.set(Math.round(x), y + 0.43, Math.round(z));
+  mesh.userData.type = 'mob';
+  scene.add(mesh);
+
+  mobs.push({
+    mesh,
+    hp: 3,
+    speed: 1 + Math.random() * 0.8,
+    wanderDir: new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize(),
+    nextTurn: 0,
+  });
+}
+
+for (let i = 0; i < 8; i += 1) spawnMob();
+
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const keys = { forward: false, backward: false, left: false, right: false };
@@ -139,6 +176,32 @@ const raycaster = new THREE.Raycaster();
 
 function nearestGridPoint(vec) {
   return { x: Math.round(vec.x), y: Math.round(vec.y), z: Math.round(vec.z) };
+}
+
+function tryDamageMob() {
+  raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+  const hits = raycaster.intersectObjects(
+    mobs.filter((mob) => mob.hp > 0).map((mob) => mob.mesh),
+    false,
+  );
+
+  const hit = hits[0];
+  if (!hit || hit.distance > 4.5) return false;
+
+  const mob = mobs.find((item) => item.mesh === hit.object);
+  if (!mob) return false;
+
+  mob.hp -= 1;
+  mob.mesh.material.color.setHex(mob.hp > 0 ? 0xfca5a5 : 0x374151);
+
+  if (mob.hp <= 0) {
+    scene.remove(mob.mesh);
+    inventory.wood += 2;
+    renderHotbar();
+    setTimeout(spawnMob, 1500);
+  }
+
+  return true;
 }
 
 document.addEventListener('keydown', (event) => {
@@ -172,6 +235,11 @@ document.addEventListener('contextmenu', (event) => event.preventDefault());
 
 document.addEventListener('mousedown', (event) => {
   if (!controls.isLocked) return;
+
+  if (event.button === 0 && tryDamageMob()) {
+    return;
+  }
+
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
   const intersects = raycaster.intersectObjects([...blocks.values()], false);
   if (intersects.length === 0) return;
@@ -271,10 +339,39 @@ function updatePlayer(delta) {
   }
 }
 
+function updateMobs(delta) {
+  const now = performance.now();
+
+  mobs.forEach((mob) => {
+    if (mob.hp <= 0) return;
+
+    if (now > mob.nextTurn) {
+      mob.wanderDir
+        .set(Math.random() - 0.5, 0, Math.random() - 0.5)
+        .normalize();
+      mob.nextTurn = now + 1200 + Math.random() * 1800;
+    }
+
+    const oldPos = mob.mesh.position.clone();
+    mob.mesh.position.x += mob.wanderDir.x * mob.speed * delta;
+    mob.mesh.position.z += mob.wanderDir.z * mob.speed * delta;
+
+    const floorY = groundHeightAt(mob.mesh.position.x, mob.mesh.position.z);
+    mob.mesh.position.y = floorY + 0.43;
+
+    const distFromCenter = Math.hypot(mob.mesh.position.x, mob.mesh.position.z);
+    if (distFromCenter > 34 || collidesAt(mob.mesh.position)) {
+      mob.mesh.position.copy(oldPos);
+      mob.wanderDir.multiplyScalar(-1);
+    }
+  });
+}
+
 function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(0.05, clock.getDelta());
   if (controls.isLocked) updatePlayer(delta);
+  updateMobs(delta);
   renderer.render(scene, camera);
 }
 animate();

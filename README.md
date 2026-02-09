@@ -11,6 +11,7 @@ A lightweight browser-based 3D voxel sandbox inspired by classic Minecraft-style
 - Break blocks with left click
 - Place blocks with right click
 - Inventory + hotbar with block selection (keys 1-9)
+- Basic roaming mobs you can fight
 - Runs entirely in the browser (no installation)
 
 ## Run locally
