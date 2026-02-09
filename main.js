@@ -28,12 +28,35 @@ const controls = new PointerLockControls(camera, document.body);
 scene.add(controls.object);
 
 const overlay = document.getElementById('overlay');
-overlay.addEventListener('click', () => controls.lock());
-controls.addEventListener('lock', () => {
-  overlay.style.display = 'none';
-});
-controls.addEventListener('unlock', () => {
+
+function showOverlay() {
   overlay.style.display = 'grid';
+}
+
+function hideOverlay() {
+  overlay.style.display = 'none';
+}
+
+overlay.addEventListener('click', () => {
+  controls.lock();
+  setTimeout(() => {
+    if (!controls.isLocked && renderer.domElement.requestPointerLock) {
+      renderer.domElement.requestPointerLock();
+    }
+  }, 50);
+});
+
+controls.addEventListener('lock', hideOverlay);
+controls.addEventListener('unlock', showOverlay);
+
+document.addEventListener('pointerlockchange', () => {
+  const lockedElement = document.pointerLockElement;
+  const isGameLocked = lockedElement === document.body || lockedElement === renderer.domElement;
+  if (isGameLocked) {
+    hideOverlay();
+  } else {
+    showOverlay();
+  }
 });
 
 const hotbarElement = document.getElementById('hotbar');
