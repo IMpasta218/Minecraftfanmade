@@ -28,6 +28,11 @@ const controls = new PointerLockControls(camera, document.body);
 scene.add(controls.object);
 
 const overlay = document.getElementById('overlay');
+const singleplayerButton = document.getElementById('btn-singleplayer');
+const multiplayerButton = document.getElementById('btn-multiplayer');
+const modsButton = document.getElementById('btn-mods');
+const settingsButton = document.getElementById('btn-settings');
+let hasStartedGame = false;
 
 function showOverlay() {
   overlay.style.display = 'grid';
@@ -37,24 +42,38 @@ function hideOverlay() {
   overlay.style.display = 'none';
 }
 
-overlay.addEventListener('click', () => {
+function startSingleplayer() {
+  hasStartedGame = true;
   controls.lock();
   setTimeout(() => {
     if (!controls.isLocked && renderer.domElement.requestPointerLock) {
       renderer.domElement.requestPointerLock();
     }
   }, 50);
+}
+
+singleplayerButton.addEventListener('click', startSingleplayer);
+multiplayerButton.addEventListener('click', () => {
+  multiplayerButton.textContent = 'Multiplayer (coming soon)';
+});
+modsButton.addEventListener('click', () => {
+  modsButton.textContent = 'Mods & Modpacks (coming soon)';
+});
+settingsButton.addEventListener('click', () => {
+  settingsButton.textContent = 'Settings (coming soon)';
 });
 
 controls.addEventListener('lock', hideOverlay);
-controls.addEventListener('unlock', showOverlay);
+controls.addEventListener('unlock', () => {
+  if (hasStartedGame) showOverlay();
+});
 
 document.addEventListener('pointerlockchange', () => {
   const lockedElement = document.pointerLockElement;
   const isGameLocked = lockedElement === document.body || lockedElement === renderer.domElement;
   if (isGameLocked) {
     hideOverlay();
-  } else {
+  } else if (hasStartedGame) {
     showOverlay();
   }
 });

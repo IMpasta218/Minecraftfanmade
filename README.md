@@ -8,6 +8,7 @@ A lightweight browser-based 3D voxel sandbox inspired by classic Minecraft-style
 
 - 3D block world with terrain variation
 - First-person controls (WASD + jump)
+- Minecraft-style start menu with Singleplayer/Multiplayer/Mods & Modpacks/Settings buttons
 - Break blocks with left click
 - Place blocks with right click
 - Inventory + hotbar with block selection (keys 1-9)

@@ -19,27 +19,68 @@
     inset: 0;
     display: grid;
     place-content: center;
-    text-align: center;
-    gap: 0.8rem;
-    background: rgba(10, 12, 18, 0.45);
-    backdrop-filter: blur(4px);
+    background: linear-gradient(to bottom, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.75));
+    backdrop-filter: blur(3px);
     z-index: 20;
-    cursor: pointer;
     padding: 1rem;
   }
   
-  #overlay h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
+  #menu-card {
+    width: min(560px, 90vw);
+    background: rgba(0, 0, 0, 0.45);
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  
+  #menu-card h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: 1px;
+  }
+  
+  .subtitle {
+    color: #cbd5e1;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .menu-buttons {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .menu-btn {
+    width: 100%;
+    border: 2px solid #111827;
+    background: linear-gradient(#d1d5db, #9ca3af);
+    color: #111827;
+    padding: 0.72rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+  
+  .menu-btn:hover {
+    background: linear-gradient(#e5e7eb, #cbd5e1);
+  }
+  
+  .menu-btn:active {
+    transform: translateY(1px);
   }
   
   .hint {
     color: #e2e8f0;
     max-width: 55rem;
     line-height: 1.4;
+    font-size: 0.9rem;
   }
   
   .legal {
-    font-size: 0.95rem;
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
     color: #f8fafc;
     opacity: 0.9;
   }
